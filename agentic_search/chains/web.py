@@ -3,12 +3,11 @@ from langchain_core.runnables import RunnablePassthrough
 import json
 import os
 import sys
-
+from yollama import get_llm
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
 from agentic_search.functions.web import get_serp_links, scrape_webpage_text
-from agentic_search.lib import get_llm
 from agentic_search.prompts.text import get_summary_prompt
 from agentic_search.prompts.web import (
     get_web_search_queries_prompt,

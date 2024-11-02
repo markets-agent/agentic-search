@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='agentic_search',
-    version='1.0.3',
+    version='2.0.0',
     packages=find_packages(),
     install_requires=[
         'arxiv',
@@ -10,11 +10,11 @@ setup(
         'duckduckgo-search',
         'langchain-community',
         'langchain-core',
-        'langchain-ollama',
         'pydantic',
         'pypdf',
         'python-dotenv',
         'requests',
+        'yollama',
         'ypostgres_lib'
     ],
     author='yactouat',
