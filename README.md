@@ -30,6 +30,26 @@ default_sql_llm_model_name = "qwen2.5-coder"
 - PostgreSQL installed and running (preferably with the `pgvector` extension installed, as the SQL generation code assumes you're using vectors in the prompts)
 - Python 3 with `venv` and `pip` installed
 
+## basic usage
+
+`pip install agentic-search`
+
+Let's say you want to test the `generate_sql_query` chain with `pytest` in your project.
+
+```python
+from agentic_search import get_generate_sql_query_chain
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def test_get_generate_sql_query_chain():
+    chain = get_generate_sql_query_chain()
+    result = chain.invoke({"query": "what are the latest headlines"})
+    assert isinstance(result, str)
+    assert result.startswith("SELECT")
+```
+
 ## how it works
 
 ## Capabilities vs Chains
