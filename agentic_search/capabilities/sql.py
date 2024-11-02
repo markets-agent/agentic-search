@@ -1,10 +1,10 @@
 import os
 import sys
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from chains.sql import (
+from agentic_search.chains.sql import (
     get_execute_sql_query_chain,
     get_generate_sql_query_chain,
     get_check_dql_chain,

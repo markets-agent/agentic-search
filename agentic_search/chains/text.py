@@ -4,12 +4,12 @@ import os
 import sys
 from typing import Literal
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from functions.text import get_pdf_pages_docs
-from lib import get_llm
-from prompts.text import (
+from agentic_search.functions.text import get_pdf_pages_docs
+from agentic_search.lib import get_llm
+from agentic_search.prompts.text import (
     get_formatted_report_prompt,
     get_summary_prompt,
 )

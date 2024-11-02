@@ -4,13 +4,13 @@ import json
 import os
 import sys
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from functions.arxiv import format_search_results, get_arxiv_search_results
-from lib import get_llm
-from prompts.arxiv import get_arxiv_search_queries_prompt
-from prompts.text import (
+from agentic_search.functions.arxiv import format_search_results, get_arxiv_search_results
+from agentic_search.lib import get_llm
+from agentic_search.prompts.arxiv import get_arxiv_search_queries_prompt
+from agentic_search.prompts.text import (
     get_formatted_report_prompt,
     get_summary_from_query_prompt,
 )

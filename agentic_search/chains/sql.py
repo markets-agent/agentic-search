@@ -3,18 +3,18 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 import os
 import sys
+from ypostgres_lib import run_static_dql
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from lib import get_llm
-from functions.sql import get_postgres_db_schema
-from prompts.sql import (
+from agentic_search.lib import get_llm
+from agentic_search.functions.sql import get_postgres_db_schema
+from agentic_search.prompts.sql import (
     get_check_dql_prompt,
     get_sql_query_prompt,
     get_sql_to_natural_language_response_prompt,
 )
-from ypostgres_lib import run_static_dql
 
 
 def get_check_dql_chain():

@@ -1,10 +1,10 @@
 import os
 import sys
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from chains.arxiv import (
+from agentic_search.chains.arxiv import (
     get_arxiv_concatenated_summary_chain,
     get_arxiv_final_report_chain,
 )

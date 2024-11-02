@@ -1,8 +1,8 @@
-# agentic research
+# agentic search
 
 ## what is this ?
 
-This repo holds the code for an agentic research tool, building up on this excellent [LangChain web search assistant YouTube tutorial](https://www.youtube.com/watch?v=DjuXACWYkkU). 
+This repo holds the code for [an agentic search tool package](https://pypi.org/project/agentic-search/), building up on this excellent [LangChain web search assistant YouTube tutorial](https://www.youtube.com/watch?v=DjuXACWYkkU). 
 
 It can search:
 
@@ -100,9 +100,9 @@ from chains import (
 )
 
 app = FastAPI(
-  title="agentic research api",
+  title="agentic search api",
   version="1.0",
-  description="a web API that serves an AI-powered agentic research tool that can generate reports by crawling various sources for relevant information and summarizing it",
+  description="a web API that serves an AI-powered agentic search tool that can generate reports by crawling various sources for relevant information and summarizing it",
 )
 add_routes(
     app,

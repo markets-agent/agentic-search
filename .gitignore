@@ -4,3 +4,6 @@ venv
 scratchpad.py
 scratchpad.sql
 example.pdf
+agentic_search.egg-info
+build
+dist
