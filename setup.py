@@ -2,10 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name='agentic_search',
-    version='1.0.1',
+    version='1.0.2',
     packages=find_packages(),
     install_requires=[
-        'arxiv'
+        'arxiv',
         'beautifulsoup4',
         'duckduckgo-search',
         'langchain-community',
