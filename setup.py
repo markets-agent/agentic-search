@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='agentic_search',
-    version='2.1.0',
+    version='2.1.2',
     packages=find_packages(),
     install_requires=[
         'arxiv',
