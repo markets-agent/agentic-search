@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 def get_formatted_report_prompt():
     """
-    Generates a formatted report prompt with a unstructured text as an input.
+    Get a formatted report prompt with a unstructured text as an input.
 
     The prompt directs the LLM to generate a comprehensive report about the provided unstructured text.
     """
@@ -61,7 +61,7 @@ IMPORTANT GUIDELINES:
 
 def get_summary_from_query_prompt():
     """
-    Generates a loose summary prompt with query and content as inputs.
+    Get a loose summary prompt with query and content as inputs.
     """
     loose_summary_with_content_prompt_template = """You are a helpful assistant.
 Your job is to provide a summary with an input query and content.
@@ -87,7 +87,7 @@ If and only if there is actual content provided above:
 
 def get_summary_prompt():
     """
-    Generates a summary prompt with content as input.
+    Get a Markdownsummary prompt with content as input.
     """
     summary_prompt_template = """You are a desk clerk.
 Your job is to provide a summary of the input content in Markdown format.

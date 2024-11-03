@@ -17,17 +17,12 @@ The idea here is to modularize all that logic so that it can be reused in other 
 
 This has been tested on a Ubuntu 24 server. You'll need:
 
+- at least 20GB of GPU VRAM for the best experience
 - all the env vars listed in the `.env.example` file
+  - be mindful that if `WITH_DEBUG_MESSAGES` is set to `true` (as in the `.env.example` file), the output to `stdout` will be more verbose
 - Ollama installed
-- the Ollama models you'll need to install are:
-
-```python
-default_llm_model_name = "llama3.1"
-default_long_context_llm_model_name = "mistral-nemo"
-default_sql_llm_model_name = "qwen2.5-coder"
-```
-
-- PostgreSQL installed and running (preferably with the `pgvector` extension installed, as the SQL generation code assumes you're using vectors in the prompts)
+- the Ollama models you need to have installed are the ones specified in the [`yollama` package](https://pypi.org/project/yollama/)
+- PostgreSQL installed and running (preferably with the `pgvector` extension installed, as the PostgreSQL generation code assumes you're using vectors in the prompts)
 - Python 3 with `venv` and `pip` installed
 
 ## basic usage
@@ -52,7 +47,43 @@ def test_get_generate_sql_query_chain():
 
 ## how it works
 
-## Capabilities vs Chains
+### folder structure
+
+```
+agentic_search/
+    capabilities/
+    chains/
+    functions/
+    graphs/
+    nodes/
+    prompts/
+```
+
+We support **capabilities** for:
+
+- arxiv
+- PostgreSQL
+- web
+
+We support **chains** for:
+
+- arxiv
+- PostgreSQL
+- text (RAG, works on PDFs as well)
+- web
+
+We support **graphs** for:
+
+- web
+
+### Functions
+
+Functions are simple Python functions that can be used by other components of the system. They are located in the `functions/` folder.
+
+
+### Prompts
+
+Prompts are the LLM prompts used by the chains. They are located in the `prompts/` folder.
 
 ### Chains
 
@@ -63,6 +94,19 @@ Chains in this project are the basic building blocks that perform specific opera
 - Can be composed together to form more complex operations
 - Return raw results that might need further processing
 
+### Graphs
+
+The chains can be orchestrated using graphs (located in the `graphs/` folder), which provides:
+
+- Ability to create cyclical workflows (unlike traditional DAG-based solutions)
+- State management between chain executions
+- Built-in persistence for maintaining conversation context
+- Support for human-in-the-loop interventions
+
+The graphs themselves use nodes, which are steps during the graph execution that can be composed together at will, located in the `nodes/` folder.
+
+Nodes can be plain agent nodes, with custom logic, or tools or set of tools (kinda like a toolbelt) that can be used by the agent.
+
 ### Capabilities
 
 Capabilities (located in the `capabilities/` folder), on the other hand, are higher-level features that:
@@ -71,27 +115,31 @@ Capabilities (located in the `capabilities/` folder), on the other hand, are hig
 - Compose multiple chains together to create complete workflows
 - Handle all the necessary orchestration between different chains
 - Return processed, ready-to-use results (either as strings or JSON objects)
-- Don't require explicit `.invoke()` calls from the end user
+- Don't require explicit `.invoke()` calls from the end user, unlike chains and graphs
 
 ### Key Differences
 
 1. **Abstraction Level**:
    - Chains: Low-level, single-purpose operations
+   - Graphs: Infrastructure layer handling state and flow control
    - Capabilities: High-level, complete features that solve user problems
 
 2. **Usage Pattern**:
-   - Chains: Require explicit `.invoke()` calls and knowledge of input structure
+   - Chains: Sequential units of work that involve LLMs and/or Python functions
+   - Graphs: Manages the execution flow and state between components
    - Capabilities: Accept simple string inputs in natural language
 
 3. **Composition**:
    - Chains: Are the building blocks that get composed together
-   - Capabilities: Are the composers that arrange chains into useful features
+   - Graphs: Provides the framework for connecting and orchestrating components
+   - Capabilities: Are the composers that arrange chains and graphsinto useful features
 
 4. **Output**:
    - Chains: May return raw or intermediate results
+   - Graphs: Handles state updates and ensures proper data flow between nodes
    - Capabilities: Always return processed, user-friendly output
 
-This architecture allows for better modularity and reusability, as chains can be mixed and matched to create different capabilities while keeping the core logic separate from the high-level features.
+This architecture allows for better modularity and reusability, as chains and graphs can be mixed and matched to create different capabilities while keeping the core logic separate from the high-level features. The graphs layer ensures reliable execution and state management throughout the workflow. The capabilities layer, on the other hand, provide a user-friendly interface for interacting with the system.
 
 ## philosophy
 

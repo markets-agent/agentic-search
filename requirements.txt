@@ -3,6 +3,7 @@ beautifulsoup4
 duckduckgo-search
 langchain-community
 langchain-core
+langgraph
 pydantic
 pypdf
 python-dotenv

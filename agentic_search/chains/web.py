@@ -4,6 +4,7 @@ import json
 import os
 import sys
 from yollama import get_llm
+
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
@@ -16,7 +17,7 @@ from agentic_search.prompts.web import (
 
 def get_scrape_and_summarize_webpage_chain():
     """
-    Generates a chain that takes a URL as input and returns a summary of the webpage.
+    Get a chain that takes a URL as input and returns a summary of the webpage.
 
     Input key is `url`.
 
@@ -40,7 +41,7 @@ def get_scrape_and_summarize_webpage_chain():
 
 def get_scrape_and_summarize_webpages_from_user_query_chain():
     """
-    Generates a chain that takes a query as an input and returns a concatenated string of summaries of the webpages.
+    Get a chain that takes a query as an input and returns a concatenated string of summaries of the webpages.
 
     This works by:
     - generating search engine queries
@@ -75,12 +76,11 @@ def get_scrape_and_summarize_webpages_from_user_query_chain():
 
 def get_search_the_web_and_report_chain():
     """
-    Generates a chain that takes a user query in natural language as an input
-    and returns a written report based on the web pages that were searched and scraped to be relevant to the query.
+    Get a chain that takes a user query in natural language as an input for a search on the web.
 
     Input key is `query`.
 
-    Returns a string with the report.
+    Returns a written Markdown report (as a string) based on the web pages that were searched and scraped to be relevant to the query.
     """
     return (
         RunnablePassthrough.assign(
@@ -94,7 +94,7 @@ def get_search_the_web_and_report_chain():
 
 def get_web_search_queries_chain():
     """
-    Generates a chain that outputs a list of 3 web search queries in JSON format from a user query written in natural language.
+    Get a chain that outputs a list of 3 web search queries in JSON format from a user query written in natural language.
 
     Input key is `query`.
     """
