@@ -1,4 +1,26 @@
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+
+
+def get_user_query_expansion_prompt() -> PromptTemplate:
+    """
+    Get prompt to expand user query in order to maximize the chances of finding relevant information on the web.
+
+    Input and output key is "query".
+    """
+    user_query_expansion_prompt_template = """As a web search specialist, expand this query to optimize search relevance while maintaining its core intent:
+
+Query: {query}
+
+IMPORTANT:
+1. The expanded query MUST directly relate to the original query's main topic
+2. Do not add unrelated or tangential concepts
+3. Focus on adding relevant context and synonyms
+
+Return JSON: {{"query": "your expanded query"}}"""
+    user_query_expansion_prompt = PromptTemplate.from_template(
+        user_query_expansion_prompt_template
+    )
+    return user_query_expansion_prompt
 
 
 def get_web_search_agent_system_prompt():

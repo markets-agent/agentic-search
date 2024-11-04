@@ -11,6 +11,7 @@ sys.path.append(root_dir)
 from agentic_search.functions.web import get_serp_links, scrape_webpage_text
 from agentic_search.prompts.text import get_summary_prompt
 from agentic_search.prompts.web import (
+    get_user_query_expansion_prompt,
     get_web_search_queries_prompt,
 )
 
@@ -33,7 +34,9 @@ def get_scrape_and_summarize_webpage_chain():
     ) | (
         lambda summarization_res: (
             f"URL: {summarization_res['url']}\nSUMMARY: {summarization_res['summary']}"
-            if summarization_res['summary'].strip()  # Only format if summary is non-empty
+            if summarization_res[
+                "summary"
+            ].strip()  # Only format if summary is non-empty
             else ""
         )
     )
@@ -54,18 +57,14 @@ def get_scrape_and_summarize_webpages_from_user_query_chain():
     """
     return (
         get_web_search_queries_chain()
-        | (
-            lambda input_obj: [
-                {"query": q} for q in input_obj["queries"]
-            ]
-        )
+        | (lambda input_obj: [{"query": q} for q in input_obj["queries"]])
         | RunnablePassthrough.assign(
             urls=lambda input_obj: get_serp_links(input_obj["query"])
         ).map()
         | (
             lambda x: [
-                {"query": item["query"], "url": url} 
-                for item in x 
+                {"query": item["query"], "url": url}
+                for item in x
                 for url in item["urls"]
             ]
         )
@@ -84,6 +83,13 @@ def get_search_the_web_and_report_chain():
     """
     return (
         RunnablePassthrough.assign(
+            query=get_user_query_expansion_prompt()
+            | get_llm()
+            | StrOutputParser()
+            | json.loads
+            | (lambda x: x["query"])
+        )
+        | RunnablePassthrough.assign(
             content=get_scrape_and_summarize_webpages_from_user_query_chain()
         )
         | get_summary_prompt()
