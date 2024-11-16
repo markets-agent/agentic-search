@@ -25,13 +25,16 @@ def get_web_search_agent_node(state: MessagesState):
     return {"messages": [llm_with_tools.invoke([sys_msg] + state["messages"])]}
 
 
-def get_web_search_tool_node(query: str):
+def get_web_search_tool_node(query: str, x: int):
     """Search the web for the given query and output a nicely formatted and readable Markdown document.
+
+    1st argument: `query`
+    2nd argument: `x` (the number of search engine queries to generate)
 
     Use this tool if you need to search the web for current information or information that is not in your knowledge base.
     """
     log_if_debug(f"invoking web search tool with query: {query}")
-    return get_search_the_web_and_report_chain().invoke({"query": query})
+    return get_search_the_web_and_report_chain().invoke({"query": query, "x": x})
 
 
 def get_web_search_tools():

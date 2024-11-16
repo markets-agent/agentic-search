@@ -1,11 +1,14 @@
 arxiv
 beautifulsoup4
 duckduckgo-search
+ipykernel
 langchain-community
 langchain-core
 langgraph
+nltk
 pydantic
 pypdf
+pytest
 python-dotenv
 requests
 yollama>=1.0.3

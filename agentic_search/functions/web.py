@@ -17,10 +17,10 @@ def get_serp_links(query: str, num_results: int = 3):
     return [r["link"] for r in results]
 
 
-def scrape_webpage_text(url: str):
+def scrape_webpage_text(url: str, timeout: int = 5):
     log_if_debug(f"scraping webpage {url}")
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=timeout)
         if r.status_code == 200:
             # BeautifulSoup transforms a complex HTML document into a tree of Python objects,
             # such as tags, navigable strings, or comments

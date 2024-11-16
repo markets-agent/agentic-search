@@ -4,6 +4,7 @@ import os
 import sys
 from typing import Literal
 from yollama import get_llm
+
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
@@ -35,19 +36,10 @@ def get_report_chain():
         | get_summary_chain().map()
         | (
             lambda summaries: {
-                "unstructured_text": "\n\n".join(
-                    [
-                        f"""-----------------------------------------------------------------------------------------------------------
-{s}
------------------------------------------------------------------------------------------------------------"""
-                        for s in summaries
-                    ]
-                )
+                "unstructured_text": "\n\n".join([f"""{s}""" for s in summaries])
             }
         )
-        | RunnablePassthrough.assign(
-            unstructured_text=lambda input: input
-        )
+        | RunnablePassthrough.assign(unstructured_text=lambda input: input)
         | get_formatted_report_prompt()
         | get_llm("long-context", False)
         | StrOutputParser()

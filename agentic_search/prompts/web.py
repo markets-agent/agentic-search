@@ -1,4 +1,5 @@
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+import os
 
 
 def get_user_query_expansion_prompt() -> PromptTemplate:
@@ -23,20 +24,29 @@ Return JSON: {{"query": "your expanded query"}}"""
     return user_query_expansion_prompt
 
 
-def get_web_search_agent_system_prompt():
-    return """You are a precise research assistant with access to a web search tool. Your role is to:
-- Provide the user withaccurate, up-to-date information
-- Synthesize information from multiple sources into clear responses
-- Cite sources and maintain objectivity
+def get_web_search_agent_system_prompt() -> str:
+    prompt = """You are a precise research assistant with web search capabilities. Your tasks:
+1. Provide accurate, current information
+2. Synthesize multi-source information concisely
+3. Include citations and maintain objectivity
 
-You will always focus on authoritative sources and verifiable information.
+Focus on authoritative, verifiable sources only.
 
-If you already have the required information and if you are absolutely sure of it, do not perform a web search; 
-otherwise, always consider whether a web search would help answer the user's query."""
+Skip web search if you are completely certain of information.
+Otherwise, perform targeted searches as needed."""
+    return prompt
 
 
-def get_web_search_queries_prompt():
-    web_search_queries_prompt_template = """Generate 3 search engine queries to find objective information about:
+def get_web_search_queries_prompt() -> ChatPromptTemplate:
+    """
+    Get a prompt to generate a list of search engine queries from a user query.
+
+    Input keys are:
+    - `query`: the user query to expand
+    - `x`: the number of queries to generate
+    """
+    web_search_queries_prompt_template = """Generate {x} web search engine queries to find objective information about this user query:
+
 ---
 {query}
 ---

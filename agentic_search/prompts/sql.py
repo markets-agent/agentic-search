@@ -9,9 +9,9 @@ You are a given a SQL query, your job is:
 - to check that it's only doing data retrieval (i.e. only SELECT statements)
 
 Here is the SQL query, delimited by dashes:
------------------------------------------------------------------------------------------------------------
+---
 {query}
------------------------------------------------------------------------------------------------------------
+---
 
 You are to output a JSON object with the following fields:
 - is_valid: a boolean indicating whether the query is syntactically correct and only does data retrieval

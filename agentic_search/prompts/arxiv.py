@@ -48,9 +48,9 @@ Your job is to write 3 search queries to search Arxiv with a given user input qu
 - all journal reference searches that do not contain a wildcard are literal searches: a search for `Physica A` will match all papers with journal references containing `Physica A`, but a search for `Physica A, 245 (1997) 181` will only return the paper with journal reference `Physica A, 245 (1997) 181`
        
 Here is the user input query, delimited by dashes:
------------------------------------------------------------------------------------------------------------
+---
 {query}
------------------------------------------------------------------------------------------------------------
+---
 
 You must respond with a JSON containing a list of strings in the following format:
          

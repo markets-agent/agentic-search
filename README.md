@@ -2,7 +2,7 @@
 
 ## what is this ?
 
-This repo holds the code for [an agentic search tool package](https://pypi.org/project/agentic-search/), building up on this excellent [LangChain web search assistant YouTube tutorial](https://www.youtube.com/watch?v=DjuXACWYkkU). 
+This repo holds the code for [an agentic search tool package](https://pypi.org/project/agentic-search/), building up on this excellent [LangChain web search assistant YouTube tutorial](https://www.youtube.com/watch?v=DjuXACWYkkU). I want to automate my searches on various data sources, as well as their analysis.
 
 It can search:
 
@@ -140,6 +140,27 @@ Capabilities (located in the `capabilities/` folder), on the other hand, are hig
    - Capabilities: Always return processed, user-friendly output
 
 This architecture allows for better modularity and reusability, as chains and graphs can be mixed and matched to create different capabilities while keeping the core logic separate from the high-level features. The graphs layer ensures reliable execution and state management throughout the workflow. The capabilities layer, on the other hand, provide a user-friendly interface for interacting with the system.
+
+## tests
+
+To run the tests, follow these steps:
+
+- Navigate to the project root directory.
+
+- Run all tests:
+   ```
+   pytest
+   ```
+
+- To run tests from a specific file:
+  ```
+  pytest agentic_search/functions/test_text.py -vv -s
+  ```
+
+- To run a specific test function:
+  ```
+  pytest -k "test_normalize_and_lemmatize_text" agentic_search/functions/test_text.py -vv -s
+  ```
 
 ## philosophy
 

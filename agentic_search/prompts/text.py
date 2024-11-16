@@ -69,14 +69,14 @@ Your job is to provide a summary with an input query and content.
 IMPORTANT: If the content section below is empty or contains no meaningful text, you MUST return an empty string ("") with no other text.
 
 Here is the user's query, delimited by dashes:
------------------------------------------------------------------------------------------------------------
+---
 {query}
------------------------------------------------------------------------------------------------------------
+---
 
 Here is the content, delimited by dashes:
------------------------------------------------------------------------------------------------------------
+---
 {content}
------------------------------------------------------------------------------------------------------------
+---
 
 If and only if there is actual content provided above:
 1. Focus ONLY on the relationship between the initial query and the provided content
@@ -86,22 +86,35 @@ If and only if there is actual content provided above:
 
 
 def get_summary_prompt():
-    """
-    Get a Markdownsummary prompt with content as input.
-    """
-    summary_prompt_template = """You are a desk clerk.
-Your job is to provide a summary of the input content in Markdown format.
-
-IMPORTANT: If the content section below is empty or contains no meaningful text, you MUST return an empty string ("") with no other text or explanations.
+    summary_prompt_template = """You are a desk clerk who MUST follow instructions EXACTLY.
+Your ONLY allowed outputs are either:
+1. A markdown-formatted summary (when valid content is provided)
+2. An empty string "" (for empty or non-meaningful content)
 
 Here is the content, delimited by dashes:
------------------------------------------------------------------------------------------------------------
+---
 {content}
------------------------------------------------------------------------------------------------------------
+---
 
-If and only if there is actual content provided above:
-1. Write your summary in Markdown format
-2. Base your summary ONLY on the provided content
-3. Do not include any information from your own knowledge base
-4. If the content is empty or not meaningful, just output an empty string ("")"""
+Instructions:
+1. If the content is empty, whitespace, or not meaningful: output ONLY ""
+2. Otherwise, write a Markdown summary using ONLY the provided content
+3. Never explain your actions or add any other text
+4. Never acknowledge empty content - just return ""
+
+Remember: You are not allowed to output any explanatory text like "No content found" or "Empty input" - only "" or a markdown summary."""
     return ChatPromptTemplate.from_template(summary_prompt_template)
+
+
+def get_qa_with_context_prompt():
+    """
+    Get a prompt for answering a query with a context.
+    """
+    qa_with_context_prompt_template = """You are a helpful assistant answering queries based on provided context.
+
+QUERY:
+{query}
+
+CONTEXT:
+{context}"""
+    return ChatPromptTemplate.from_template(qa_with_context_prompt_template)

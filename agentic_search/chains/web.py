@@ -9,11 +9,32 @@ root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 sys.path.append(root_dir)
 
 from agentic_search.functions.web import get_serp_links, scrape_webpage_text
-from agentic_search.prompts.text import get_summary_prompt
+from agentic_search.prompts.text import (
+    get_summary_prompt,
+)
 from agentic_search.prompts.web import (
     get_user_query_expansion_prompt,
     get_web_search_queries_prompt,
 )
+
+
+def get_concatenated_web_search_results_chain():
+    """
+    Get a chain that takes a list of summaries of web scraped pages and returns a concatenated string of the summaries.
+
+    Input key is `query`.
+
+    Returns a dict with keys `content` and `query`.
+    """
+    return (
+        RunnablePassthrough.assign(query=lambda input_obj: input_obj["query"])
+        | RunnablePassthrough.assign(
+            urls=lambda input_obj: get_serp_links(input_obj["query"])
+        )
+        | (lambda x: [{"query": x["query"], "url": url} for url in x["urls"]])
+        | get_scrape_and_summarize_webpage_chain().map()
+        | (lambda x: {"content": "\n\n".join(x)})
+    )
 
 
 def get_scrape_and_summarize_webpage_chain():
@@ -33,7 +54,7 @@ def get_scrape_and_summarize_webpage_chain():
         | StrOutputParser()
     ) | (
         lambda summarization_res: (
-            f"URL: {summarization_res['url']}\nSUMMARY: {summarization_res['summary']}"
+            f"INITIAL QUERY: {summarization_res['query']}\nSOURCE: {summarization_res['url']}\nSUMMARY: {summarization_res['summary']}"
             if summarization_res[
                 "summary"
             ].strip()  # Only format if summary is non-empty
@@ -42,7 +63,7 @@ def get_scrape_and_summarize_webpage_chain():
     )
 
 
-def get_scrape_and_summarize_webpages_from_user_query_chain():
+def get_scrape_and_summarize_webpages_from_generated_queries_chain():
     """
     Get a chain that takes a query as an input and returns a concatenated string of summaries of the webpages.
 
@@ -90,7 +111,7 @@ def get_search_the_web_and_report_chain():
             | (lambda x: x["query"])
         )
         | RunnablePassthrough.assign(
-            content=get_scrape_and_summarize_webpages_from_user_query_chain()
+            content=get_scrape_and_summarize_webpages_from_generated_queries_chain()
         )
         | get_summary_prompt()
         | get_llm("long-context", False)
