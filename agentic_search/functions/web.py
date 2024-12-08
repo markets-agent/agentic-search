@@ -23,6 +23,7 @@ class ThrottledDDGWrapper:
         else:
             self.cache = Cache(Cache.MEMORY, ttl=300)  # 5-minute in memory cache
         self.max_results = max_results
+
     async def results(self, query):
         # check cache first
         cached_result = await self.cache.get(query)
@@ -53,7 +54,7 @@ async def get_serp_links(query: str, num_results: int = 3):
     return results
 
 
-def get_webpage_soup_text(
+def get_webpage_soup(
     webpage_url: str, chrome_instance: webdriver.Chrome, timeout: int = 4
 ) -> BeautifulSoup:
     soup = None
@@ -68,9 +69,20 @@ def get_webpage_soup_text(
     return text
 
 
-def get_webpages_soups_text(
-    urls: List[str], timeout_for_page_load: int = 4
-) -> str:
+def get_webpage_soup_text(
+    webpage_url: str, chrome_instance: webdriver.Chrome, timeout: int = 4
+) -> BeautifulSoup:
+    soup = None
+    try:
+        soup = get_webpage_soup(webpage_url, chrome_instance, timeout)
+        text = soup.get_text(separator=" ", strip=True)
+        text += f"\n\nSOURCE: {webpage_url}\n\n"
+    except Exception as e:
+        log_if_debug(f"error getting webpage soup for {webpage_url}: {e}")
+    return text
+
+
+def get_webpages_soups_text(urls: List[str], timeout_for_page_load: int = 4) -> str:
 
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")
@@ -98,7 +110,7 @@ def get_webpages_soups_text(
     chrome_instance.quit()
 
     # extract text from each soup
-    content = ''
+    content = ""
     for text in soups_text:
         content += text
         content += "\n\n---\n\n"
