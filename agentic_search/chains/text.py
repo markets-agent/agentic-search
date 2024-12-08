@@ -15,7 +15,7 @@ from agentic_search.prompts.text import (
 )
 
 
-def get_report_chain():
+def get_pdf_report_chain():
     """
     Generates a report chain for a PDF document.
 
@@ -50,6 +50,6 @@ def get_summary_chain(use_case: Literal["default", "long-context"] = "default"):
     """
     Generates a summary chain.
 
-    Input key is `content`.
+    Input keys are `content` and `query`.
     """
     return get_summary_prompt() | get_llm(use_case, False) | StrOutputParser()

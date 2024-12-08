@@ -43,14 +43,19 @@ def get_web_search_queries_prompt() -> ChatPromptTemplate:
 
     Input keys are:
     - `query`: the user query to expand
-    - `x`: the number of queries to generate
     """
-    web_search_queries_prompt_template = """Generate {x} web search engine queries to find objective information about this user query:
+    web_search_queries_prompt_template = """Generate appropriate web search engine queries to find objective information about this user query:
 
 ---
 {query}
 ---
 
+IMPORTANT: 
+- generate as many queries as needed to thoroughly cover the topic
+- use fewer queries for simple topics, more for complex ones
+- each query should target a distinct aspect of the information needed
+- avoid redundant queries
+
 Return JSON only:
-{{"queries": ["query 1", "query 2", "query 3"]}}"""
+{{"queries": ["query 1", "query 2", ...]}}"""
     return ChatPromptTemplate.from_template(web_search_queries_prompt_template)

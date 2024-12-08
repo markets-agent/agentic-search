@@ -1,4 +1,6 @@
+aiocache
 arxiv
+asyncio
 beautifulsoup4
 duckduckgo-search
 ipykernel
@@ -9,7 +11,7 @@ nltk
 pydantic
 pypdf
 pytest
-python-dotenv
-requests
+redis
+selenium
 yollama>=1.0.3
 ypostgres_lib

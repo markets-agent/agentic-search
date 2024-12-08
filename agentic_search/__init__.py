@@ -27,5 +27,8 @@ from .prompts.sql import *
 from .prompts.text import *
 from .prompts.web import *
 
+# tools
+from .tools.web import *
+
 # lib
 from .lib import *

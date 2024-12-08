@@ -2,10 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='agentic_search',
-    version='4.1.3',
+    version='5.0.0',
     packages=find_packages(),
     install_requires=[
+        'aiocache',
         'arxiv',
+        'asyncio',
         'beautifulsoup4',
         'duckduckgo-search',
         'langchain-community',
@@ -15,7 +17,8 @@ setup(
         'pydantic',
         'pypdf',
         'python-dotenv',
-        'requests',
+        'redis',
+        'selenium',
         'yollama',
         'ypostgres_lib'
     ],

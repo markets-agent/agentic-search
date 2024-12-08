@@ -59,50 +59,33 @@ IMPORTANT GUIDELINES:
     return ChatPromptTemplate.from_template(formatted_report_prompt_template)
 
 
-def get_summary_from_query_prompt():
-    """
-    Get a loose summary prompt with query and content as inputs.
-    """
-    loose_summary_with_content_prompt_template = """You are a helpful assistant.
-Your job is to provide a summary with an input query and content.
-
-IMPORTANT: If the content section below is empty or contains no meaningful text, you MUST return an empty string ("") with no other text.
-
-Here is the user's query, delimited by dashes:
----
-{query}
----
-
-Here is the content, delimited by dashes:
----
-{content}
----
-
-If and only if there is actual content provided above:
-1. Focus ONLY on the relationship between the initial query and the provided content
-2. If there is no relationship between the query and content or if the content is empty or not meaningful, return an empty string ("")
-3. Base your response ONLY on the provided content, not any other sources"""
-    return ChatPromptTemplate.from_template(loose_summary_with_content_prompt_template)
-
-
 def get_summary_prompt():
     summary_prompt_template = """You are a desk clerk who MUST follow instructions EXACTLY.
 Your ONLY allowed outputs are either:
-1. A markdown-formatted summary (when valid content is provided)
-2. An empty string "" (for empty or non-meaningful content)
+1. A markdown-formatted summary that answers the query using EXCLUSIVELY the content between the dashes
+2. An empty string "" (for empty/non-meaningful content OR when content doesn't answer the query)
 
-Here is the content, delimited by dashes:
+CRITICAL: You must ONLY use information from the provided content between the dashes. DO NOT use any external knowledge or facts you may know. If the answer cannot be found in the provided content, return "".
+
+Here is the query to answer:
+{query}
+
+Here is the ONLY content you are allowed to use to formulate your response, delimited by dashes:
 ---
 {content}
 ---
 
 Instructions:
 1. If the content is empty, whitespace, or not meaningful: output ONLY ""
-2. Otherwise, write a Markdown summary using ONLY the provided content
-3. Never explain your actions or add any other text
-4. Never acknowledge empty content - just return ""
+2. If the content does not contain an EXPLICIT answer to the query: output ONLY ""
+3. If answering would require ANY information not directly stated in the content: output ONLY ""
+4. Otherwise, write a Markdown summary that answers the query using ONLY words and facts found in the provided content
+5. Never explain your actions or add any other text
+6. Never acknowledge empty content or inability to answer - just return ""
 
-Remember: You are not allowed to output any explanatory text like "No content found" or "Empty input" - only "" or a markdown summary."""
+Remember: 
+- You are not allowed to output any explanatory text like "No content found" or "Cannot answer query" - only "" or a markdown summary
+- You must NEVER use your own knowledge to formulate your response - only what is explicitly stated between the dashes"""
     return ChatPromptTemplate.from_template(summary_prompt_template)
 
 

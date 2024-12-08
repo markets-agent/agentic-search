@@ -1,8 +1,10 @@
 # agentic search
 
+Multimedia search capabilities for your projects, fully local.
+
 ## what is this ?
 
-This repo holds the code for [an agentic search tool package](https://pypi.org/project/agentic-search/), building up on this excellent [LangChain web search assistant YouTube tutorial](https://www.youtube.com/watch?v=DjuXACWYkkU). I want to automate my searches on various data sources, as well as their analysis.
+This repo holds the code for [a fully local agentic search tool package](https://pypi.org/project/agentic-search/), building up on this excellent [LangChain web search assistant YouTube tutorial](https://www.youtube.com/watch?v=DjuXACWYkkU). I want to automate my searches on various data sources, as well as their analysis.
 
 It can search:
 
@@ -33,10 +35,6 @@ Let's say you want to test the `generate_sql_query` chain with `pytest` in your 
 
 ```python
 from agentic_search import get_generate_sql_query_chain
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 def test_get_generate_sql_query_chain():
     chain = get_generate_sql_query_chain()
