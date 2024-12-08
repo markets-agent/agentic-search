@@ -31,8 +31,6 @@ async def get_agentic_web_search_results_tool(query: str):
             content += "\n\n---\n\n"
         if len(q_links) > 0:
             links_to_scrape.extend(q_links)
-        # wait a random amount of time between 1-2 seconds before the next query
-        await asyncio.sleep(1 + random.random())
     scraped_content = get_webpages_soups_text(
         [x["href"] for x in links_to_scrape], query
     )

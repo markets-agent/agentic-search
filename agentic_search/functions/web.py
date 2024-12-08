@@ -47,6 +47,24 @@ class ThrottledDDGWrapper:
             return []
 
 
+def get_chrome_instance(timeout_for_page_load: int = 4):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--remote-debugging-port=9222")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.binary_location = os.getenv(
+        "CHROME_BINARY_LOCATION", "/usr/bin/google-chrome"
+    )
+    chrome_options.page_load_strategy = "eager"
+
+    chrome_instance = webdriver.Chrome(
+        options=chrome_options,
+        service=webdriver.ChromeService(timeout=timeout_for_page_load),
+    )
+    return chrome_instance
+
+
 async def get_serp_links(query: str, num_results: int = 3):
     ddg_search = ThrottledDDGWrapper(max_results=num_results)
     results = await ddg_search.results(query)
@@ -62,11 +80,9 @@ def get_webpage_soup(
         chrome_instance.set_page_load_timeout(timeout)
         chrome_instance.get(webpage_url)
         soup = BeautifulSoup(chrome_instance.page_source, "html.parser")
-        text = soup.get_text(separator=" ", strip=True)
-        text += f"\n\nSOURCE: {webpage_url}\n\n"
     except Exception as e:
         log_if_debug(f"error getting webpage soup for {webpage_url}: {e}")
-    return text
+    return soup
 
 
 def get_webpage_soup_text(
@@ -83,21 +99,7 @@ def get_webpage_soup_text(
 
 
 def get_webpages_soups_text(urls: List[str], timeout_for_page_load: int = 4) -> str:
-
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--remote-debugging-port=9222")
-    chrome_options.add_argument("--window-size=1920,1080")
-    chrome_options.binary_location = os.getenv(
-        "CHROME_BINARY_LOCATION", "/usr/bin/google-chrome"
-    )
-    chrome_options.page_load_strategy = "eager"
-
-    chrome_instance = webdriver.Chrome(
-        options=chrome_options,
-        service=webdriver.ChromeService(timeout=timeout_for_page_load),
-    )
+    chrome_instance = get_chrome_instance(timeout_for_page_load)
 
     soups_text = []
     for url in urls:
