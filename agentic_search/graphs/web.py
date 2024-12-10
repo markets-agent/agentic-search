@@ -1,5 +1,4 @@
 from langgraph.graph import MessagesState, StateGraph, START
-from langgraph.pregel import RetryPolicy
 from langgraph.prebuilt import ToolNode, tools_condition
 import os
 import sys
@@ -18,12 +17,10 @@ def get_search_the_web_react_graph():
     builder.add_node(
         "web_search_agent",
         get_web_search_agent_node,
-        retry=RetryPolicy(max_attempts=3),
     )
     builder.add_node(
         "tools",
         ToolNode(get_web_search_tools()),
-        retry=RetryPolicy(max_attempts=3),
     )
 
     # add edges to the graph

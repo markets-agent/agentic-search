@@ -1,6 +1,42 @@
 from langchain_core.prompts import ChatPromptTemplate
 
 
+def get_claims_consistency_comparison_prompt():
+    """
+    Get a prompt for comparing two claims.
+    """
+    claims_consistency_comparison_prompt_template = """Compare these claims for consistency. Output JSON only: {{"consistent": "yes" | "no"}}
+
+CLAIM 1:
+{claim_1}
+
+CLAIM 2:
+{claim_2}"""
+    return ChatPromptTemplate.from_template(
+        claims_consistency_comparison_prompt_template
+    )
+
+
+def get_content_answers_to_query_prompt():
+    """
+    Get a prompt for answering a query with a context.
+    """
+    context_answers_to_query_prompt_template = """You are a helpful assistant tasked with determining if a query can be fully answered using ONLY the provided context, without relying on any other external knowledge or your internal knowledge.
+
+QUERY:
+{query}
+
+CONTENT, delimited by dashes:
+---
+{content}
+---
+
+Analyze if the query can be completely and accurately answered using ONLY the information present in the CONTENT section above.
+Respond with a JSON object containing a single key "fully_answered" with value either "yes" or "no".
+Example response format: {{"fully_answered": "yes"}} or {{"fully_answered": "no"}}"""
+    return ChatPromptTemplate.from_template(context_answers_to_query_prompt_template)
+
+
 def get_formatted_report_prompt():
     """
     Get a formatted report prompt with a unstructured text as an input.
@@ -60,44 +96,27 @@ IMPORTANT GUIDELINES:
 
 
 def get_summary_prompt():
-    summary_prompt_template = """You are a desk clerk who MUST follow instructions EXACTLY.
-Your ONLY allowed outputs are either:
-1. A markdown-formatted summary that answers the query using EXCLUSIVELY the content between the dashes
-2. An empty string "" (for empty/non-meaningful content OR when content doesn't answer the query)
+    summary_prompt_template = """You are a desk clerk. Output ONLY:
+1. A markdown summary answering the query using EXCLUSIVELY the provided content, OR
+2. An empty string "" if content is empty/irrelevant or query can't be answered
 
-CRITICAL: You must ONLY use information from the provided content between the dashes. DO NOT use any external knowledge or facts you may know. If the answer cannot be found in the provided content, return "".
-
-Here is the query to answer:
+Query:
 {query}
 
-Here is the ONLY content you are allowed to use to formulate your response, delimited by dashes:
+Content:
 ---
 {content}
 ---
 
-Instructions:
-1. If the content is empty, whitespace, or not meaningful: output ONLY ""
-2. If the content does not contain an EXPLICIT answer to the query: output ONLY ""
-3. If answering would require ANY information not directly stated in the content: output ONLY ""
-4. Otherwise, write a Markdown summary that answers the query using ONLY words and facts found in the provided content
-5. Never explain your actions or add any other text
-6. Never acknowledge empty content or inability to answer - just return ""
+Rules:
+1. Use ONLY information from the content - no external knowledge
+2. Return "" if:
+   - Content is empty/meaningless
+   - Query can't be answered explicitly from content
+   - Answer would require unavailable information
+3. Never explain or add commentary
+4. Never acknowledge inability to answer
+5. Format response in markdown
 
-Remember: 
-- You are not allowed to output any explanatory text like "No content found" or "Cannot answer query" - only "" or a markdown summary
-- You must NEVER use your own knowledge to formulate your response - only what is explicitly stated between the dashes"""
+Response must be either a clear markdown summary or ""."""
     return ChatPromptTemplate.from_template(summary_prompt_template)
-
-
-def get_qa_with_context_prompt():
-    """
-    Get a prompt for answering a query with a context.
-    """
-    qa_with_context_prompt_template = """You are a helpful assistant answering queries based on provided context.
-
-QUERY:
-{query}
-
-CONTEXT:
-{context}"""
-    return ChatPromptTemplate.from_template(qa_with_context_prompt_template)
