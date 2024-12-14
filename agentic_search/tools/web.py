@@ -32,9 +32,12 @@ async def get_agentic_quick_web_search_results_tool(
     Use this tool if you need to quickly search the web for current information or information that is not in your knowledge base.
     """
     log_if_debug(f"invoking quickweb search tool with query: {query}")
-    search_query = get_web_search_query_chain().invoke({"query": query})
+    excluded_queries = []
     answer = ""
     for _ in range(estimated_number_of_searches):
+        search_query = get_web_search_query_chain(excluded_queries).invoke(
+            {"query": query}
+        )
         links_to_scrape = []
         q_links = await get_serp_links(search_query["query"])
         if len(q_links) <= 0:
@@ -63,6 +66,7 @@ async def get_agentic_quick_web_search_results_tool(
                     "query": query,
                 }
             )
+        excluded_queries.append(search_query["query"])
     # this always returns some form of summary, regardless of it fully being answered
     return get_summary_chain().invoke({"content": answer, "query": query})
 
@@ -82,9 +86,12 @@ async def get_agentic_thorough_web_search_results_tool(
     Use this tool if you need to thoroughly search the web for current information or information that is not in your knowledge base.
     """
     log_if_debug(f"invoking thorough web search tool with query: {query}")
-    search_queries = get_web_search_queries_chain().invoke({"query": query})
+    excluded_queries = []
     answer = ""
     for _ in range(estimated_number_of_searches):
+        search_queries = get_web_search_queries_chain(excluded_queries).invoke(
+            {"query": query}
+        )
         for q in search_queries["queries"]:
             links_to_scrape = []
             links = await get_serp_links(q)
@@ -114,6 +121,7 @@ async def get_agentic_thorough_web_search_results_tool(
                         "query": query,
                     }
                 )
+                excluded_queries.append(q)
     # this always returns some form of summary, regardless of it fully being answered
     return get_summary_chain().invoke({"content": answer, "query": query})
 

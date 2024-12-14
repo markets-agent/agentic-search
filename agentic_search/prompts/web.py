@@ -36,7 +36,7 @@ Today is {datetime.now().strftime('%Y-%m-%d')}."""
     return prompt
 
 
-def get_web_search_query_prompt() -> ChatPromptTemplate:
+def get_web_search_query_prompt(excluded_queries: list[str] = []) -> ChatPromptTemplate:
     """
     Get a prompt to generate a single search engine query from a user query.
 
@@ -57,10 +57,15 @@ Return JSON only:
     # ground the LLM in time
     web_search_query_prompt_template += f"""
 Today is {datetime.now().strftime('%Y-%m-%d')}."""
+    # add excluded queries to the prompt
+    if len(excluded_queries) > 0:
+        web_search_query_prompt_template += f"""
+Your output MUST NOT include the following queries:
+- {"\n- ".join(excluded_queries)}"""
     return ChatPromptTemplate.from_template(web_search_query_prompt_template)
 
 
-def get_web_search_queries_prompt() -> ChatPromptTemplate:
+def get_web_search_queries_prompt(excluded_queries: list[str] = []) -> ChatPromptTemplate:
     """
     Get a prompt to generate a list of search engine queries from a user query.
 
@@ -84,4 +89,9 @@ Return JSON only:
     # ground the LLM in time
     web_search_queries_prompt_template += f"""
 Today is {datetime.now().strftime('%Y-%m-%d')}."""
+    # add excluded queries to the prompt
+    if len(excluded_queries) > 0:
+        web_search_queries_prompt_template += f"""
+Your output MUST NOT include the following queries:
+- {"\n- ".join(excluded_queries)}"""
     return ChatPromptTemplate.from_template(web_search_queries_prompt_template)
