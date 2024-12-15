@@ -26,4 +26,6 @@ async def get_web_search_results(query: str):
         ]}
     )
     log_if_debug(f"Web search capability result: {invocation}")
-    return invocation["messages"][-1].content
+    return {
+        "results": invocation["messages"][-1].content
+    }
