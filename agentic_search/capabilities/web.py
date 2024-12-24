@@ -1,7 +1,7 @@
 from langchain_core.messages import HumanMessage
 import os
 import sys
-
+import json
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
@@ -22,10 +22,10 @@ async def get_web_search_results(query: str):
     """
     invocation = await get_search_the_web_react_graph().ainvoke(
         {"messages": [
-            HumanMessage(content=query)
+            HumanMessage(content=query + f"""Answer in JSON format: {{"content": "your results"}}""")
         ]}
     )
     log_if_debug(f"Web search capability result: {invocation}")
     return {
-        "results": invocation["messages"][-1].content
+        "results": json.loads(invocation["messages"][-1].content)["content"]
     }

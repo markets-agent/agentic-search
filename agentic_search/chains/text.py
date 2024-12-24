@@ -4,12 +4,12 @@ from langchain_core.runnables import RunnablePassthrough
 import os
 import sys
 from typing import Literal
-from yollama import get_llm
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
 from agentic_search.functions.text import get_pdf_pages_docs
+from agentic_search.lib import get_llm
 from agentic_search.prompts.text import (
     get_claims_consistency_comparison_prompt,
     get_content_answers_to_query_prompt,
@@ -73,4 +73,4 @@ def get_summary_chain(use_case: Literal["default", "long-context"] = "default"):
 
     Input keys are `content` and `query`.
     """
-    return get_summary_prompt() | get_llm(use_case, False) | StrOutputParser()
+    return get_summary_prompt(True) | get_llm(use_case, False) | StrOutputParser()

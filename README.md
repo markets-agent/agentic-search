@@ -22,10 +22,15 @@ This has been tested on a Ubuntu 24 server. You'll need:
 - at least 20GB of GPU VRAM for the best experience
 - all the env vars listed in the `.env.example` file
   - be mindful that if `WITH_DEBUG_MESSAGES` is set to `true` (as in the `.env.example` file), the output to `stdout` will be more verbose
+- Chrome and ChromeDriver installed
 - Ollama installed
 - the Ollama models you need to have installed are the ones specified in the [`yollama` package](https://pypi.org/project/yollama/)
 - PostgreSQL installed and running (preferably with the `pgvector` extension installed, as the PostgreSQL generation code assumes you're using vectors in the prompts)
 - Python 3 with `venv` and `pip` installed
+
+## optional
+
+- if `OPENAI_API_KEY` is set, the `web` capability will use OpenAI's models instead of Ollama's
 
 ## basic usage
 

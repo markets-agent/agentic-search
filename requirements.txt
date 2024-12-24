@@ -6,11 +6,13 @@ duckduckgo-search
 ipykernel
 langchain-community
 langchain-core
+langchain-openai
 langgraph
 nltk
 pydantic
 pypdf
 pytest
+python-dotenv
 redis
 selenium
 yollama>=1.0.3

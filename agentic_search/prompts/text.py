@@ -95,7 +95,7 @@ IMPORTANT GUIDELINES:
     return ChatPromptTemplate.from_template(formatted_report_prompt_template)
 
 
-def get_summary_prompt():
+def get_summary_prompt(json_output: bool = False):
     summary_prompt_template = """You are a desk clerk. Output ONLY:
 1. A markdown summary answering the query using EXCLUSIVELY the provided content, OR
 2. An empty string "" if content is empty/irrelevant or query can't be answered
@@ -119,4 +119,6 @@ Rules:
 5. Format response in markdown
 
 Response must be either a clear markdown summary or ""."""
+    if json_output:
+        summary_prompt_template += """\n\nOutput your response in the following JSON format: {{"content": "your summary"}}"""
     return ChatPromptTemplate.from_template(summary_prompt_template)

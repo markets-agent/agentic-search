@@ -3,7 +3,7 @@ import asyncio
 from asyncio import Semaphore
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
-from duckduckgo_search import AsyncDDGS
+from duckduckgo_search import DDGS
 from duckduckgo_search.exceptions import DuckDuckGoSearchException, RatelimitException
 import json
 import os
@@ -39,8 +39,8 @@ class CachedDDGWrapper:
         # simplified retry logic - only one retry
         ddg_wrapper = None
         try:
-            ddg_wrapper = AsyncDDGS(proxy=None)
-            results = await ddg_wrapper.atext(query, max_results=self.max_results)
+            ddg_wrapper = DDGS(proxy=None)
+            results = ddg_wrapper.text(query, max_results=self.max_results)
 
             if not results:
                 raise DuckDuckGoSearchException("No results returned")

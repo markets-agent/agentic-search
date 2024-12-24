@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='agentic_search',
-    version='7.0.0',
+    version='8.0.0',
     packages=find_packages(),
     install_requires=[
         'aiocache',
@@ -12,6 +12,7 @@ setup(
         'duckduckgo-search',
         'langchain-community',
         'langchain-core',
+        'langchain-openai',
         'langgraph',
         'nltk',
         'pydantic',

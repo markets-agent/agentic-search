@@ -1,6 +1,5 @@
 from langchain_core.messages import SystemMessage
 from langgraph.graph import MessagesState
-from yollama import get_llm
 import os
 import sys
 
@@ -8,7 +7,7 @@ import sys
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from agentic_search.lib import log_if_debug
+from agentic_search.lib import get_llm, log_if_debug
 from agentic_search.prompts.web import get_web_search_agent_system_prompt
 from agentic_search.tools.web import get_web_search_tools
 

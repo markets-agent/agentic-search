@@ -3,13 +3,13 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 import os
 import sys
-from yollama import get_llm
 from ypostgres_lib import run_static_dql
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
 from agentic_search.functions.sql import get_postgres_db_schema
+from agentic_search.lib import get_llm
 from agentic_search.prompts.sql import (
     get_check_dql_prompt,
     get_sql_query_prompt,
