@@ -7,7 +7,7 @@ sys.path.append(root_dir)
 from agentic_search.chains.text import get_content_summary_chain
 
 
-async def get_running_summary(items: list[str]):
+def get_running_summary(items: list[str]):
     """
     Get a running summary from a list of items.
 
