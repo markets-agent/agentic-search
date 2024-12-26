@@ -37,6 +37,27 @@ Example response format: {{"fully_answered": "yes"}} or {{"fully_answered": "no"
     return ChatPromptTemplate.from_template(context_answers_to_query_prompt_template)
 
 
+def get_content_summary_prompt():
+    """
+    Get a prompt for summarizing a content.
+    """
+    content_summary_prompt_template = """You are a media company clerck.
+
+Your job is to summarize unstructured content coming from various news outlets.
+
+Here is the content, delimited by dashes:
+---
+{content}
+---
+
+IMPORTANT RULES:
+- Never mention the news outlet from which the content comes from in your summary.
+- Extract only the key information from the content.
+- Your summary must be in markdown format.
+- Your final output must be a JSON object with a single key "content" containing your Markdown-formatted summary as a string."""
+    return ChatPromptTemplate.from_template(content_summary_prompt_template)
+
+
 def get_formatted_report_prompt():
     """
     Get a formatted report prompt with a unstructured text as an input.
@@ -95,7 +116,7 @@ IMPORTANT GUIDELINES:
     return ChatPromptTemplate.from_template(formatted_report_prompt_template)
 
 
-def get_summary_prompt(json_output: bool = False):
+def get_qa_summary_prompt(json_output: bool = False):
     summary_prompt_template = """You are a desk clerk. Output ONLY:
 1. A markdown summary answering the query using EXCLUSIVELY the provided content, OR
 2. An empty string "" if content is empty/irrelevant or query can't be answered

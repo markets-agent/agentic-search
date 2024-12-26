@@ -13,8 +13,9 @@ from agentic_search.lib import get_llm
 from agentic_search.prompts.text import (
     get_claims_consistency_comparison_prompt,
     get_content_answers_to_query_prompt,
+    get_content_summary_prompt,
     get_formatted_report_prompt,
-    get_summary_prompt,
+    get_qa_summary_prompt,
 )
 
 
@@ -36,6 +37,10 @@ def get_content_answers_to_query_chain():
     )
 
 
+def get_content_summary_chain():
+    return get_content_summary_prompt() | get_llm() | StrOutputParser()
+
+
 def get_pdf_report_chain():
     """
     Generates a report chain for a PDF document.
@@ -54,7 +59,7 @@ def get_pdf_report_chain():
                 for page in pages["results"]
             ]
         )
-        | get_summary_chain().map()
+        | get_qa_summary_chain().map()
         | (
             lambda summaries: {
                 "unstructured_text": "\n\n".join([f"""{s}""" for s in summaries])
@@ -67,10 +72,10 @@ def get_pdf_report_chain():
     )
 
 
-def get_summary_chain(use_case: Literal["default", "long-context"] = "default"):
+def get_qa_summary_chain(use_case: Literal["default", "long-context"] = "default"):
     """
     Generates a summary chain.
 
     Input keys are `content` and `query`.
     """
-    return get_summary_prompt(True) | get_llm(use_case, False) | StrOutputParser()
+    return get_qa_summary_prompt(True) | get_llm(use_case, False) | StrOutputParser()

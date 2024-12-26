@@ -15,7 +15,7 @@ def get_llm(
     if os.getenv("OPENAI_API_KEY") is None:
         return get_ollama_llm(use_case, output_json)
     else:
-        return get_openai_llm(output_json, use_case)
+        return get_openai_llm(use_case, output_json)
 
 
 def get_openai_llm(

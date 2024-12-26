@@ -3,7 +3,7 @@ import sys
 
 from agentic_search.chains.text import (
     get_content_answers_to_query_chain,
-    get_summary_chain,
+    get_qa_summary_chain,
 )
 from agentic_search.functions.web import get_serp_links, get_webpages_soups_text_async
 
@@ -48,7 +48,7 @@ async def get_agentic_quick_web_search_results_tool(
         )
         for item in scraped_content:
             content = answer + "\n\n" + item
-            answer = get_summary_chain().invoke(
+            answer = get_qa_summary_chain().invoke(
                 {
                     "content": content,
                     "query": query,
@@ -60,7 +60,7 @@ async def get_agentic_quick_web_search_results_tool(
             if answers_to_query["fully_answered"] == "yes":
                 return answer
             # re assigning `content` variable to a running summary chain on the whole content
-            answer = get_summary_chain().invoke(
+            answer = get_qa_summary_chain().invoke(
                 {
                     "content": answer,
                     "query": query,
@@ -68,7 +68,7 @@ async def get_agentic_quick_web_search_results_tool(
             )
         excluded_queries.append(search_query["query"])
     # this always returns some form of summary, regardless of it fully being answered
-    return get_summary_chain().invoke({"content": answer, "query": query})
+    return get_qa_summary_chain().invoke({"content": answer, "query": query})
 
 
 async def get_agentic_thorough_web_search_results_tool(
@@ -103,7 +103,7 @@ async def get_agentic_thorough_web_search_results_tool(
             )
             for item in scraped_content:
                 content = answer + "\n\n" + item
-                answer = get_summary_chain().invoke(
+                answer = get_qa_summary_chain().invoke(
                     {
                         "content": content,
                         "query": query,
@@ -115,7 +115,7 @@ async def get_agentic_thorough_web_search_results_tool(
                 if answers_to_query["fully_answered"] == "yes":
                     return answer
                 # re assigning `content` variable to a running summary chain on the whole content
-                answer = get_summary_chain().invoke(
+                answer = get_qa_summary_chain().invoke(
                     {
                         "content": answer,
                         "query": query,
@@ -123,7 +123,7 @@ async def get_agentic_thorough_web_search_results_tool(
                 )
                 excluded_queries.append(q)
     # this always returns some form of summary, regardless of it fully being answered
-    return get_summary_chain().invoke({"content": answer, "query": query})
+    return get_qa_summary_chain().invoke({"content": answer, "query": query})
 
 
 def get_web_search_tools():

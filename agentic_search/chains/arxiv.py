@@ -12,7 +12,7 @@ from agentic_search.lib import get_llm
 from agentic_search.prompts.arxiv import get_arxiv_search_queries_prompt
 from agentic_search.prompts.text import (
     get_formatted_report_prompt,
-    get_summary_prompt,
+    get_qa_summary_prompt,
 )
 
 
@@ -66,7 +66,7 @@ def get_arxiv_search_results_summaries_chain():
             content=lambda input_obj: input_obj["search_result"]
         )
         # this content is then passed to the next prompt
-        | get_summary_prompt()
+        | get_qa_summary_prompt()
         # we don't want a JSON output here, just the raw summary string
         | get_llm(False)
         | StrOutputParser()
