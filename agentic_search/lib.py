@@ -51,6 +51,10 @@ def get_openai_llm(
         )
 
 
+def log(message: str):
+    print(f"\033[36m[DEBUG] \n{message}\n\033[0m")  # Cyan color for debug messages
+
+
 def log_if_debug(message: str):
     if os.getenv("WITH_DEBUG_MESSAGES") == "true":
-        print(f"\033[36m[DEBUG] \n{message}\n\033[0m")  # Cyan color for debug messages
+        log(message)
