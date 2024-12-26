@@ -1,6 +1,7 @@
 # capabilities
 from .capabilities.arxiv import *
 from .capabilities.sql import *
+from .capabilities.text import *
 from .capabilities.web import *
 
 # chains
