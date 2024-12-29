@@ -15,5 +15,5 @@ pytest
 python-dotenv
 redis
 selenium
-yollama>=1.0.3
+yollama>=2.0.1
 ypostgres_lib

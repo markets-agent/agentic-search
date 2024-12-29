@@ -39,23 +39,21 @@ Example response format: {{"fully_answered": "yes"}} or {{"fully_answered": "no"
 
 def get_content_summary_prompt(output_json: bool = True):
     """
-    Get a prompt for summarizing a content.
+    Get a prompt for summarizing content.
     """
-    content_summary_prompt_template = """You are a knowledge worker.
-
-Your job is to summarize unstructured content coming from various sources.
-
-Here is the content, delimited by dashes:
+    content_summary_prompt_template = """Summarize the following content in markdown format:
 ---
 {content}
 ---
 
-IMPORTANT RULES:
-- Never mention the source from which the content comes from in your summary.
-- Extract only the key information from the content.
-- Your summary must be in markdown format."""
+Rules:
+- Extract key information only
+- No source attribution
+- No summary prefaces
+- Direct markdown output"""
+
     if output_json:
-        content_summary_prompt_template += """\n\nOutput your response in the following JSON format: {{"content": "your summary"}}"""
+        content_summary_prompt_template += """\n\nOutput as JSON: {{"content": "your_summary"}}"""
     return ChatPromptTemplate.from_template(content_summary_prompt_template)
 
 

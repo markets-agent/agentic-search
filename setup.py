@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='agentic_search',
-    version='9.0.4',
+    version='9.1.0',
     packages=find_packages(),
     install_requires=[
         'aiocache',
