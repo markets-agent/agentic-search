@@ -37,8 +37,8 @@ def get_content_answers_to_query_chain():
     )
 
 
-def get_content_summary_chain():
-    return get_content_summary_prompt() | get_llm() | StrOutputParser()
+def get_content_summary_chain(llm_provider: Literal["ollama", "openai"] = "ollama"):
+    return get_content_summary_prompt() | get_llm("default", True, llm_provider) | StrOutputParser()
 
 
 def get_pdf_report_chain():

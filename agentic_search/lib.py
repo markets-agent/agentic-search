@@ -11,7 +11,7 @@ sys.path.append(root_dir)
 def get_llm(
     use_case: Literal["default", "long-context", "reasoning", "sql"] = "default",
     output_json: bool = True,
-    provider: Literal["openai", "ollama"] = "ollama",
+    provider: Literal["ollama", "openai"] = "ollama",
 ):
     if provider == "ollama":
         return get_ollama_llm(use_case, output_json)
