@@ -47,10 +47,12 @@ def get_content_summary_prompt(output_json: bool = True):
 ---
 
 Rules:
-- Extract key information only
-- No source attribution
-- No summary prefaces
-- Direct markdown output"""
+- Extract key information only.
+- Include only factual and complete information or reasoned analysis.
+- DO NOT INCLUDE incomplete sentences, click-bait headlines, open-ended questions, or cliff-hangers in your summary.
+- No source attribution.
+- No summary prefaces.
+- Direct markdown output."""
 
     if output_json:
         content_summary_prompt_template += """\n\nOutput as JSON: {{"content": "your_summary"}}"""
