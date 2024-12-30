@@ -11,8 +11,9 @@ sys.path.append(root_dir)
 def get_llm(
     use_case: Literal["default", "long-context", "reasoning", "sql"] = "default",
     output_json: bool = True,
+    provider: Literal["openai", "ollama"] = "ollama",
 ):
-    if os.getenv("OPENAI_API_KEY") is None:
+    if provider == "ollama":
         return get_ollama_llm(use_case, output_json)
     else:
         return get_openai_llm(use_case, output_json)
@@ -32,10 +33,15 @@ def get_openai_llm(
     """
     max_tokens = 16384
 
+    model_name = "gpt-4o"
+    # having trouble with `o1` like many other users
+    # if use_case == "reasoning":
+    #     model_name = "o1"
+
     if output_json:
         return ChatOpenAI(
             model_kwargs={"response_format": {"type": "json_object"}},
-            model="gpt-4o",
+            model=model_name,
             max_tokens=max_tokens,
             streaming=True,
             stream_usage=True,
@@ -43,7 +49,7 @@ def get_openai_llm(
         )
     else:
         return ChatOpenAI(
-            model="gpt-4o",
+            model=model_name,
             max_tokens=max_tokens,
             streaming=True,
             stream_usage=True,
