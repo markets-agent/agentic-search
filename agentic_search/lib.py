@@ -33,10 +33,10 @@ def get_openai_llm(
     """
     max_tokens = 16384
 
-    model_name = "gpt-4o"
+    model_name = "gpt-4o-mini"
     # having trouble with `o1` like many other users
-    # if use_case == "reasoning":
-    #     model_name = "o1"
+    if use_case == "reasoning":
+        model_name = "gpt-4o"
 
     if output_json:
         return ChatOpenAI(
