@@ -3,11 +3,10 @@ from langgraph.graph import MessagesState
 import os
 import sys
 
-
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
 
-from agentic_search.lib import get_llm, log_if_debug
+from agentic_search.lib import get_websearch_llm, log_if_debug
 from agentic_search.prompts.web import get_web_search_agent_system_prompt
 from agentic_search.tools.web import get_web_search_tools
 
@@ -17,7 +16,7 @@ def get_web_search_agent_node(state: MessagesState):
     # let's give our agent a personae
     sys_msg = SystemMessage(content=get_web_search_agent_system_prompt())
     # now bind tools to the agent
-    llm_with_tools = get_llm("default", False).bind_tools(get_web_search_tools())
+    llm_with_tools = get_websearch_llm().bind_tools(get_web_search_tools())
     log_if_debug(
         f"invoking web search agent with messages: {[sys_msg] + state['messages']}"
     )

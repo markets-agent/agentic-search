@@ -14,7 +14,7 @@ def get_claim_verification_web_search_query_prompt() -> ChatPromptTemplate:
 {claim}
 ---
 
-Return JSON: {{"query": "query"}}"""
+Strictly output valid JSON (no markdown or other formatting): {{"query": "query"}}"""
     return ChatPromptTemplate.from_template(
         claim_verification_search_query_prompt_template
     )
@@ -52,7 +52,7 @@ Here is the user query, delimited by triple dashes:
 
 IMPORTANT: generate ONLY one query to best cover the topic
 
-Return JSON only:
+Strictly output valid JSON (no markdown or other formatting):
 {{"query": "query"}}"""
     # ground the LLM in time
     web_search_query_prompt_template += f"""
@@ -84,7 +84,7 @@ IMPORTANT:
 - each query should target a distinct aspect of the information needed
 - avoid redundant queries
 
-Return JSON only:
+Strictly output valid JSON (no markdown or other formatting):
 {{"queries": ["query 1", "query 2", ...]}}"""
     # ground the LLM in time
     web_search_queries_prompt_template += f"""

@@ -13,10 +13,22 @@ def get_llm(
     output_json: bool = True,
     provider: Literal["ollama", "openai"] = "ollama",
 ):
-    if provider == "ollama":
-        return get_ollama_llm(use_case, output_json)
-    else:
+    """
+    Get a configured LLM instance based on the specified provider.
+
+    Args:
+        use_case: The use case for the LLM. Options are "default", "long-context", "reasoning", or "sql".
+        output_json: Whether the LLM should output JSON format responses.
+        provider: The LLM provider to use. Options are "ollama" or "openai".
+
+    Returns:
+        A configured LLM instance from either OpenAI or Ollama based on the provider parameter.
+        This instance will be `ollama` by default if provider is not expected.
+    """
+    if provider == "openai":
         return get_openai_llm(use_case, output_json)
+    else:
+        return get_ollama_llm(use_case, output_json)
 
 
 def get_openai_llm(
@@ -55,6 +67,14 @@ def get_openai_llm(
             stream_usage=True,
             temperature=0,
         )
+
+
+def get_websearch_llm():
+    return get_llm("default", False, get_websearch_llm_provider())
+
+
+def get_websearch_llm_provider():
+    return os.getenv("WEBSEARCH_LLM_PROVIDER", "ollama")
 
 
 def log(message: str):

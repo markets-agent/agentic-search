@@ -28,10 +28,10 @@ def get_claims_consistency_comparison_chain():
     )
 
 
-def get_content_answers_to_query_chain():
+def get_content_answers_to_query_chain(llm_provider: Literal["ollama", "openai"] = "ollama"):
     return (
         get_content_answers_to_query_prompt()
-        | get_llm()
+        | get_llm("default", True, llm_provider)
         | StrOutputParser()
         | json.loads
     )
@@ -72,10 +72,10 @@ def get_pdf_report_chain():
     )
 
 
-def get_qa_summary_chain(use_case: Literal["default", "long-context"] = "default"):
+def get_qa_summary_chain(use_case: Literal["default", "long-context"] = "default", llm_provider: Literal["ollama", "openai"] = "ollama"):
     """
     Generates a summary chain.
 
     Input keys are `content` and `query`.
     """
-    return get_qa_summary_prompt(True) | get_llm(use_case, False) | StrOutputParser()
+    return get_qa_summary_prompt(True) | get_llm(use_case, False, llm_provider) | StrOutputParser()
