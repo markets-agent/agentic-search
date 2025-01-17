@@ -26,7 +26,7 @@ async def get_web_search_results(query: str) -> dict:
             "messages": [
                 HumanMessage(
                     content=query
-                    + f"""Answer in JSON format: {{
+                    + f"""Answer in JSON format without any preamble, formatting, or explanatory text, just a valid JSON object in this format: {{
                         "content": "your results as a string",
                         "metadata": "any additional metadata that was attached to the web search results, if any" | null,
                         "type": "text" | "video" (if the results are videos)
@@ -35,7 +35,7 @@ async def get_web_search_results(query: str) -> dict:
             ]
         }
     )
-    log_if_debug(f"Web search capability result: {invocation}")
+    log_if_debug(f"Web search capability result: {invocation["messages"][-1]}")
     return {
         "results": json.loads(
             invocation["messages"][-1]
