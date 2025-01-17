@@ -50,7 +50,8 @@ async def get_web_search_results_tool(
             vids, key=lambda x: x["statistics"]["viewCount"], reverse=True
         )
         return {
-            "content": videos_with_most_views[0]["content"],
+            "content": f"{videos_with_most_views[0]['content']}",
+            "metadata": f"{videos_with_most_views[0]['title']}",
             "type": "video",
         }
 
@@ -112,6 +113,7 @@ async def get_web_search_results_tool(
         "content": get_qa_summary_chain("default", get_websearch_llm_provider()).invoke(
             {"content": answer, "query": query}
         ),
+        "metadata": "",
         "type": "text",
     }
 

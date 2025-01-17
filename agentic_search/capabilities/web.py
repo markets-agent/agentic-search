@@ -10,7 +10,7 @@ from agentic_search.lib import log_if_debug
 from agentic_search.graphs.web import get_search_the_web_react_graph
 
 
-async def get_web_search_results(query: str):
+async def get_web_search_results(query: str) -> dict:
     """
     Get a web search report for a given query using a LangGraph ReAct agent.
 
@@ -28,6 +28,7 @@ async def get_web_search_results(query: str):
                     content=query
                     + f"""Answer in JSON format: {{
                         "content": "your results as a string",
+                        "metadata": "any additional metadata that was attached to the web search results, if any" | null,
                         "type": "text" | "video" (if the results are videos)
                         }}"""
                 )
@@ -42,6 +43,12 @@ async def get_web_search_results(query: str):
             .replace("```", "")
             .strip()
         )["content"],
+        "metadata": json.loads(
+            invocation["messages"][-1]
+            .content.replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )["metadata"],
         "type": json.loads(
             invocation["messages"][-1]
             .content.replace("```json", "")
