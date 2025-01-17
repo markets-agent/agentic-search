@@ -45,13 +45,14 @@ def get_arxiv_search_results(query: str, num_results: int = 3):
     results_formatted = []
     for paper in client.results(search):
         authors_str = ", ".join([author.name for author in paper.authors])
-        links_str = ", ".join([link.href for link in paper.links])
+        # get the PDF URL (usually the first link ending with 'pdf')
+        pdf_url = next((link.href for link in paper.links if link.href.endswith('pdf')), None)
         published_str = paper.published.strftime("%B %d, %Y")
         results_formatted.append(
             {
                 "authors": authors_str,
                 "id": paper.get_short_id(),
-                "links": links_str,
+                "pdf_url": pdf_url,  # Add the PDF URL to the results
                 "published": published_str,
                 "summary": paper.summary,
                 "title": paper.title,
@@ -68,8 +69,7 @@ def get_arxiv_search_results(query: str, num_results: int = 3):
 
         Summary: {result["summary"]}
 
-        Links: {result["links"]}
-        
+        PDF URL: {result["pdf_url"]}
     """
         for result in results_formatted
     ]

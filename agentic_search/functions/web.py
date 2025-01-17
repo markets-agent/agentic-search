@@ -11,7 +11,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 import sys
-from typing import List
+from typing import List, Literal
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_dir)
@@ -20,6 +20,7 @@ from agentic_search.lib import log_if_debug
 
 # sharing only one Chrome instance across all requests
 chrome_semaphore = Semaphore(1)
+
 
 class CachedDDGWrapper:
     def __init__(self, max_results: int):
@@ -30,7 +31,7 @@ class CachedDDGWrapper:
             self.cache = Cache(Cache.MEMORY, ttl=300)  # 5-minute in memory cache
         self.max_results = max_results
 
-    async def results(self, query):
+    async def results(self, query, type: Literal["text", "video"] = "text"):
         # check cache first
         cached_result = await self.cache.get(query)
         if cached_result:
@@ -40,7 +41,11 @@ class CachedDDGWrapper:
         ddg_wrapper = None
         try:
             ddg_wrapper = DDGS(proxy=None)
-            results = ddg_wrapper.text(query, max_results=self.max_results)
+            results = (
+                ddg_wrapper.text(query, max_results=self.max_results)
+                if type == "text"
+                else ddg_wrapper.videos(query, max_results=self.max_results)
+            )
 
             if not results:
                 raise DuckDuckGoSearchException("No results returned")
@@ -85,6 +90,13 @@ async def get_serp_links(query: str, num_results: int = 3):
     return results
 
 
+async def get_videos(query: str, num_results: int = 3):
+    ddg_search = CachedDDGWrapper(max_results=num_results)
+    results = await ddg_search.results(query, "video")
+    log_if_debug(f"serp results for query {query}: {results}")
+    return results
+
+
 def get_webpage_soup(
     webpage_url: str, chrome_instance: webdriver.Chrome, timeout: int = 4
 ) -> BeautifulSoup:
@@ -97,16 +109,17 @@ def get_webpage_soup(
             chrome_instance.current_url  # this will throw if browser crashed
         except:
             # clean up crashed instance
-            chrome_instance.quit() 
+            chrome_instance.quit()
             raise Exception("browser became unresponsive")
 
-
         wait.until(
-            lambda d: d.execute_script('return document.readyState') == 'complete',
+            lambda d: d.execute_script("return document.readyState") == "complete",
         )
         return BeautifulSoup(chrome_instance.page_source, "html.parser")
     except Exception as e:
-        log_if_debug(f"`get_webpage_soup` => error getting webpage soup for {webpage_url}: {e}")
+        log_if_debug(
+            f"`get_webpage_soup` => error getting webpage soup for {webpage_url}: {e}"
+        )
         return None
 
 
@@ -122,8 +135,11 @@ def get_webpage_soup_text(
         text += f"\n\nSOURCE: {webpage_url}\n\n"
         return text
     except Exception as e:
-        log_if_debug(f"`get_webpage_soup_text` => error getting webpage soup for {webpage_url}: {e}")
+        log_if_debug(
+            f"`get_webpage_soup_text` => error getting webpage soup for {webpage_url}: {e}"
+        )
         return ""
+
 
 async def get_webpage_soup_text_async(webpage_url: str, timeout: int = 4) -> str:
     async with chrome_semaphore:  # wait for available slot
@@ -135,15 +151,20 @@ async def get_webpage_soup_text_async(webpage_url: str, timeout: int = 4) -> str
             with ThreadPoolExecutor() as pool:
                 text = await loop.run_in_executor(
                     pool,
-                    lambda: get_webpage_soup_text(webpage_url, chrome_instance, timeout),
+                    lambda: get_webpage_soup_text(
+                        webpage_url, chrome_instance, timeout
+                    ),
                 )
                 # always close the Chrome instance
                 chrome_instance.quit()
                 return text
         except Exception as e:
-            log_if_debug(f"`get_webpage_soup_text_async` => error getting webpage soup for {webpage_url}: {e}")
+            log_if_debug(
+                f"`get_webpage_soup_text_async` => error getting webpage soup for {webpage_url}: {e}"
+            )
             chrome_instance.quit()
             return ""
+
 
 async def get_webpages_soups_text_async(
     urls: List[str], timeout_for_page_load: int = 3

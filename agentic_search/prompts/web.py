@@ -20,6 +20,27 @@ Strictly output valid JSON (no markdown or other formatting): {{"query": "query"
     )
 
 
+def get_route_search_type_prompt() -> ChatPromptTemplate:
+    route_search_type_prompt_template = """You are an AI assistant that helps determine whether video or text search results would be more appropriate for a user's query. 
+
+Choose video type if the user query involves:
+- a physical demonstration
+- a visual process
+- DIY work or sequences of steps to be executed by a human
+- some spatial understanding
+
+Otherwise, choose text type.
+
+Here is the user query, delimited by triple dashes:
+---
+{query}
+---
+
+Strictly output valid JSON (no markdown or other formatting): {{"search_type": "video" | "text"}}
+"""
+    return ChatPromptTemplate.from_template(route_search_type_prompt_template)
+
+
 def get_web_search_agent_system_prompt() -> str:
     prompt = """You are a precise research assistant with web search capabilities. Your tasks:
 1. Provide accurate, current information
@@ -65,7 +86,9 @@ Your output MUST NOT include the following queries:
     return ChatPromptTemplate.from_template(web_search_query_prompt_template)
 
 
-def get_web_search_queries_prompt(excluded_queries: list[str] = []) -> ChatPromptTemplate:
+def get_web_search_queries_prompt(
+    excluded_queries: list[str] = [],
+) -> ChatPromptTemplate:
     """
     Get a prompt to generate a list of search engine queries from a user query.
 

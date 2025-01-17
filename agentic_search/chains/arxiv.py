@@ -17,6 +17,13 @@ from agentic_search.prompts.text import (
 
 
 def get_arxiv_concatenated_summary_chain():
+    """
+    Creates a chain that concatenates the summaries of arXiv search results.
+
+    Input key is `query`.
+
+    Returns a chain that concatenates the summaries of arXiv search results.
+    """
     return (
         # first generate the search queries
         get_arxiv_search_queries_chain()

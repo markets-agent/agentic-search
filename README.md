@@ -4,7 +4,7 @@ Multimedia search capabilities for your projects, fully local.
 
 ## what is this ?
 
-This repo holds the code for [a fully local agentic search tool package](https://pypi.org/project/agentic-search/), building up on this excellent [LangChain web search assistant YouTube tutorial](https://www.youtube.com/watch?v=DjuXACWYkkU). I want to automate my searches on various data sources, as well as their analysis.
+This repo holds the code for [an agentic search tool package](https://pypi.org/project/agentic-search/), building up on this excellent [LangChain web search assistant YouTube tutorial](https://www.youtube.com/watch?v=DjuXACWYkkU). I want to automate my searches on various data sources, as well as their analysis.
 
 It can search:
 
@@ -28,10 +28,6 @@ This has been tested on a Ubuntu 24 server. You'll need:
 - PostgreSQL installed and running (preferably with the `pgvector` extension installed, as the PostgreSQL generation code assumes you're using vectors in the prompts)
 - Python 3 with `venv` and `pip` installed
 
-## optional
-
-- if `OPENAI_API_KEY` is set, the `web` capability will use OpenAI's models instead of Ollama's
-
 ## basic usage
 
 `pip install agentic-search`
@@ -39,14 +35,19 @@ This has been tested on a Ubuntu 24 server. You'll need:
 Let's say you want to test the `generate_sql_query` chain with `pytest` in your project.
 
 ```python
-from agentic_search import get_generate_sql_query_chain
+from agentic_search.capabilities.web import get_web_search_results
 
-def test_get_generate_sql_query_chain():
-    chain = get_generate_sql_query_chain()
-    result = chain.invoke({"query": "what are the latest headlines"})
-    assert isinstance(result, str)
-    assert result.startswith("SELECT")
+res = await get_web_search_results("what is the ticker symbol of the biggest yoghurt company in the world") # string output
 ```
+
+## features
+
+### web
+
+#### text search
+
+- present in `agentic_search/capabilities/web.py` -> `get_web_search_results`
+- you can use values `openai` | `ollama` for the `WEBSEARCH_LLM_PROVIDER` env var
 
 ## how it works
 
@@ -175,6 +176,8 @@ I've decided to let go of OpenAI to:
 - save money
 
 As local models are getting better and better, I'm confident that I'll be able to have a greater experience in the future, even with my small 20GB VRAM GPU. 🤔 Of course, it's not fast, but hey everything comes with tradeoffs right? 💪
+
+In conclusion, all components of this package should be runnable by local models with a customer-grade GPU configuration.
 
 ### search logic
 

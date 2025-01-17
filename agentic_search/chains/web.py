@@ -9,6 +9,7 @@ sys.path.append(root_dir)
 from agentic_search.lib import get_websearch_llm
 from agentic_search.prompts.web import (
     get_claim_verification_web_search_query_prompt,
+    get_route_search_type_prompt,
     get_web_search_query_prompt,
     get_web_search_queries_prompt,
 )
@@ -20,6 +21,15 @@ def get_claim_verification_web_search_query_chain():
     """
     return (
         get_claim_verification_web_search_query_prompt()
+        | get_websearch_llm()
+        | StrOutputParser()
+        | json.loads
+    )
+
+
+def get_route_search_type_chain():
+    return (
+        get_route_search_type_prompt()
         | get_websearch_llm()
         | StrOutputParser()
         | json.loads

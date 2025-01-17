@@ -14,7 +14,7 @@ async def get_web_search_results(query: str):
     """
     Get a web search report for a given query using a LangGraph ReAct agent.
 
-    Search can be made in two ways:
+    Text search can be made in two ways:
     - quick search: a single search query is generated before iterative scraping
     - thorough search: multiple search queries are generated before iterative scraping
     In both cases, the results are returned as soon as the user's query is answered.
@@ -26,7 +26,10 @@ async def get_web_search_results(query: str):
             "messages": [
                 HumanMessage(
                     content=query
-                    + f"""Answer in JSON format: {{"content": "your results"}}"""
+                    + f"""Answer in JSON format: {{
+                        "content": "your results as a string",
+                        "type": "text" | "video" (if the results are videos)
+                        }}"""
                 )
             ]
         }
@@ -38,5 +41,11 @@ async def get_web_search_results(query: str):
             .content.replace("```json", "")
             .replace("```", "")
             .strip()
-        )["content"]
+        )["content"],
+        "type": json.loads(
+            invocation["messages"][-1]
+            .content.replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )["type"],
     }
