@@ -20,5 +20,4 @@ def get_web_search_agent_node(state: MessagesState):
     log_if_debug(
         f"invoking web search agent with messages: {[sys_msg] + state['messages']}"
     )
-    # using messages state keeps history during the graph execution (transient to one execution)
     return {"messages": [llm_with_tools.invoke([sys_msg] + state["messages"])]}

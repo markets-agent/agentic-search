@@ -9,7 +9,7 @@ sys.path.append(root_dir)
 
 
 def get_llm(
-    use_case: Literal["default", "long-context", "reasoning", "sql"] = "default",
+    use_case: Literal["default", "long-context", "reasoning", "sql", "tools"] = "default",
     output_json: bool = True,
     provider: Literal["ollama", "openai"] = "ollama",
 ):
@@ -32,7 +32,7 @@ def get_llm(
 
 
 def get_openai_llm(
-    use_case: Literal["default", "long-context", "reasoning", "sql"] = "default",
+    use_case: Literal["default", "long-context", "reasoning", "sql", "tools"] = "default",
     output_json: bool = True,
 ):
     """
@@ -70,7 +70,7 @@ def get_openai_llm(
 
 
 def get_websearch_llm():
-    return get_llm("default", False, get_websearch_llm_provider())
+    return get_llm("tools", False, get_websearch_llm_provider())
 
 
 def get_websearch_llm_provider():
