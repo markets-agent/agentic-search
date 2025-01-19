@@ -47,7 +47,7 @@ def get_openai_llm(
 
     model_name = "gpt-4o-mini"
     # having trouble with `o1` like many other users
-    if use_case == "reasoning":
+    if use_case == "reasoning" or use_case == "tools":
         model_name = "gpt-4o"
 
     if output_json:

@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import time
@@ -7,9 +8,11 @@ from agentic_search.chains.text import (
     get_qa_summary_chain,
 )
 from agentic_search.functions.web import (
+    get_news,
     get_serp_links,
     get_videos,
     get_webpages_soups_text_async,
+    get_webpages_text_using_scraping_service,
 )
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -43,6 +46,16 @@ async def get_web_search_results_tool(
     )
 
     search_type = get_route_search_type_chain().invoke({"query": query})["search_type"]
+
+    if search_type == "news":
+        news = await get_news(query)
+        # concatenate `date` `title` `body` prop of each news item
+        news_content = "\n\n---\n\n".join([f"{n['date']}\n\n{n['title']}\n\n{n['body']}" for n in news])
+        return {
+            "content": f"{news_content}",
+            "metadata": "",
+            "type": "text",
+        }
 
     if search_type == "video":
         vids = await get_videos(query)
@@ -79,40 +92,59 @@ async def get_web_search_results_tool(
             links = await get_serp_links(q)
             if len(links) <= 0:
                 continue
+            # concatenate `body` prop of each SERP link
+            answer = "\n\n".join([x["body"] for x in links])
             links_to_scrape.extend(links)
-            scraped_content = await get_webpages_soups_text_async(
-                [x["href"] for x in links_to_scrape]
-            )
+            scraped_content = []
+            if int(os.getenv("USE_EXTERNAL_SCRAPING_SERVICE")) == 1:
+                log_if_debug(f"using external scraping service")
+                scraped_content = await get_webpages_text_using_scraping_service(
+                    [x["href"] for x in links_to_scrape]
+                )
+            else:
+                log_if_debug(f"using local scraping service")
+                scraped_content = await get_webpages_soups_text_async(
+                    [x["href"] for x in links_to_scrape]
+                )
+            # prepend initial content to scraped content array
             for item in scraped_content:
                 content = answer + "\n\n" + item
-                tmp_answer = get_qa_summary_chain(
+                log_if_debug(f"content input to 1st qa summary chain: {content}")
+                tmp_answer = json.loads(get_qa_summary_chain(
                     "default", get_websearch_llm_provider()
                 ).invoke(
                     {
                         "content": content,
                         "query": query,
                     }
-                )
+                ))["content"]
                 answers_to_query = get_content_answers_to_query_chain(
                     get_websearch_llm_provider()
                 ).invoke({"content": tmp_answer, "query": query})
-                if answers_to_query["fully_answered"] == "yes":
-                    return tmp_answer
-                # re assigning `content` variable to a running summary chain on the whole content
-                answer = get_qa_summary_chain(
+                log_if_debug(f"tmp_answer: {tmp_answer}")
+                log_if_debug(f"answers_to_query: {answers_to_query}")
+                if answers_to_query["answered"] == "yes":
+                    return {
+                        "content": tmp_answer,
+                        "metadata": "",
+                        "type": "text",
+                    }
+                # running summary chain on the whole content
+                answer = json.loads(get_qa_summary_chain(
                     "default", get_websearch_llm_provider()
                 ).invoke(
                     {
                         "content": tmp_answer,
                         "query": query,
                     }
-                )
+                ))["content"]
+                log_if_debug(f"web search answer: {answer}")
                 excluded_queries.append(q)
     # this always returns some form of summary, regardless of it fully being answered
     return {
-        "content": get_qa_summary_chain("default", get_websearch_llm_provider()).invoke(
+        "content": json.loads(get_qa_summary_chain("default", get_websearch_llm_provider()).invoke(
             {"content": answer, "query": query}
-        ),
+        ))["content"],
         "metadata": "",
         "type": "text",
     }

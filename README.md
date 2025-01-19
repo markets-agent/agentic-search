@@ -40,14 +40,26 @@ from agentic_search.capabilities.web import get_web_search_results
 res = await get_web_search_results("what is the ticker symbol of the biggest yoghurt company in the world") # string output
 ```
 
-## features
+## some of the features
 
 ### web
+
+#### external scraping service plugin
+
+- instead of the Python Selenium code that instanciates a Chrome instance, you can use an external scraping service, the only requirements are:
+  - the scraping service should require a custom header to be sent with the request, containing an API key as a value (both configurable in the `.env` file)
+  - the scraping service should return a JSON object having `data` as key and the webpage text (without the HTML markup) as value
+  - you can turn this feature on/off using the `USE_EXTERNAL_SCRAPING_SERVICE` env var
+- this functionality is present in `agentic_search/functions/web.py` -> `get_webpage_text_using_scraping_service`, for instance
 
 #### text search
 
 - present in `agentic_search/capabilities/web.py` -> `get_web_search_results`
 - you can use values `openai` | `ollama` for the `WEBSEARCH_LLM_PROVIDER` env var
+
+#### video search
+
+- `metadata` key will hold the video title
 
 ## how it works
 

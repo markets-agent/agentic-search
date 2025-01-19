@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='agentic_search',
-    version='11.0.2',
-    packages=find_packages(),
+    author='yactouat',
+    author_email='yactouat@yactouat.com',
+    description='code for an agentic search tool using Langchain',
     install_requires=[
         'aiocache',
+        'aiohttp',
         'arxiv',
         'asyncio',
         'beautifulsoup4',
@@ -19,15 +20,16 @@ setup(
         'pypdf',
         'python-dotenv',
         'redis',
+        'requests',
         'selenium',
         'yollama',
         'ypostgres_lib'
     ],
-    author='yactouat',
-    author_email='yactouat@yactouat.com',
-    description='code for an agentic search tool using Langchain',
+    license='MIT',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
+    name='agentic_search',
+    packages=find_packages(),
     url='https://github.com/markets-agent/agentic-search',
-    license='MIT',
+    version='12.0.0',
 )

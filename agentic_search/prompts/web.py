@@ -21,7 +21,17 @@ Strictly output valid JSON (no markdown or other formatting): {{"query": "query"
 
 
 def get_route_search_type_prompt() -> ChatPromptTemplate:
-    route_search_type_prompt_template = """You are an AI assistant that helps determine whether video or text search results would be more appropriate for a user's query. 
+    route_search_type_prompt_template = """You are an AI assistant that helps determine what type of results would be more appropriate for a user's query.
+
+Available search types are:
+- news
+- text
+- video
+
+Choose news type if the user query involves:
+- a current event
+- a live indicator
+- a news person or topic
 
 Choose video type if the user query involves:
 - a physical demonstration
@@ -36,21 +46,31 @@ Here is the user query, delimited by triple dashes:
 {query}
 ---
 
-Strictly output valid JSON (no markdown or other formatting): {{"search_type": "video" | "text"}}
+Strictly output valid JSON (no markdown or other formatting): {{"search_type": "news" | "text" | "video"}}
 """
     return ChatPromptTemplate.from_template(route_search_type_prompt_template)
 
 
 def get_web_search_agent_system_prompt() -> str:
-    prompt = """You are a precise research assistant with web search capabilities. Your tasks:
+    prompt = """You are a precise research assistant equipped with a web search tool. Your tasks:
 1. Provide accurate, current information
 2. Synthesize multi-source information concisely
 3. Include citations and maintain objectivity
 
 Focus on authoritative, verifiable sources only.
 
-Skip web search if you are completely certain of information.
-Otherwise, perform targeted searches as needed."""
+Skip web search if you are completely certain of information and if the user query is not about a current event, live indicator, news person or topic.
+Otherwise, perform targeted searches as needed.
+You will give an answer that contains your findings, whatever they are.
+No need to use the web search tool if you have enough information to answer the user query, even if incomplete.
+
+Answer in JSON format without any preamble, formatting, or explanatory text, just a valid JSON object in this format:
+
+{{
+    "content": "your results as a string or the video URL if type is video",
+    "metadata": "any additional metadata that was attached to the web search results" | null,
+    "type": "text" | "video"
+}}"""
     # ground the LLM in time
     prompt += f"""
 Today is {datetime.now().strftime('%Y-%m-%d')}."""

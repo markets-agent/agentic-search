@@ -22,37 +22,28 @@ async def get_web_search_results(query: str) -> dict:
     Returns a written Markdown report of the web search result.
     """
     invocation = await get_search_the_web_react_graph().ainvoke(
-        {
-            "messages": [
-                HumanMessage(
-                    content=query
-                    + f"""Answer in JSON format without any preamble, formatting, or explanatory text, just a valid JSON object in this format: {{
-                        "content": "your results as a string",
-                        "metadata": "any additional metadata that was attached to the web search results, if any" | null,
-                        "type": "text" | "video" (if the results are videos)
-                        }}"""
-                )
-            ]
-        }
+        {"messages": [HumanMessage(content=query)]}
     )
-    log_if_debug(f"Web search capability result: {invocation["messages"][-1]}")
+    parsed_result_content = (
+        invocation["messages"][-1]
+        .content.replace("```json", "")
+        .replace("```", "")
+        .strip()
+    )
+    log_if_debug(f"Web search capability result: {parsed_result_content}")
+    parsed_result = {
+        "content": parsed_result_content,
+        "metadata": "",
+        "type": "text",
+    }
+    try:
+        parsed_result = json.loads(parsed_result_content)
+    except Exception as e:
+        log_if_debug(f"last message: {invocation['messages'][-1]}")
+        log_if_debug(f"error parsing web search result: {e}")
+        return parsed_result
     return {
-        "results": json.loads(
-            invocation["messages"][-1]
-            .content.replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )["content"],
-        "metadata": json.loads(
-            invocation["messages"][-1]
-            .content.replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )["metadata"],
-        "type": json.loads(
-            invocation["messages"][-1]
-            .content.replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )["type"],
+        "results": parsed_result["content"],
+        "metadata": parsed_result["metadata"],
+        "type": parsed_result["type"],
     }

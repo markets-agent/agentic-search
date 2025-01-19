@@ -1,4 +1,5 @@
 from aiocache import Cache
+import aiohttp
 import asyncio
 from asyncio import Semaphore
 from bs4 import BeautifulSoup
@@ -31,7 +32,7 @@ class CachedDDGWrapper:
             self.cache = Cache(Cache.MEMORY, ttl=300)  # 5-minute in memory cache
         self.max_results = max_results
 
-    async def results(self, query, type: Literal["text", "video"] = "text"):
+    async def results(self, query, type: Literal["news", "text", "video"] = "text"):
         # check cache first
         cached_result = await self.cache.get(query)
         if cached_result:
@@ -44,6 +45,8 @@ class CachedDDGWrapper:
             results = (
                 ddg_wrapper.text(query, max_results=self.max_results)
                 if type == "text"
+                else ddg_wrapper.news(query, max_results=self.max_results)
+                if type == "news"
                 else ddg_wrapper.videos(query, max_results=self.max_results)
             )
 
@@ -83,6 +86,13 @@ def get_chrome_instance():
     return chrome_instance
 
 
+async def get_news(query: str, num_results: int = 3):
+    ddg_search = CachedDDGWrapper(max_results=num_results)
+    results = await ddg_search.results(query, "news")
+    log_if_debug(f"news results for query {query}: {results}")
+    return results
+
+
 async def get_serp_links(query: str, num_results: int = 3):
     ddg_search = CachedDDGWrapper(max_results=num_results)
     results = await ddg_search.results(query)
@@ -93,7 +103,7 @@ async def get_serp_links(query: str, num_results: int = 3):
 async def get_videos(query: str, num_results: int = 3):
     ddg_search = CachedDDGWrapper(max_results=num_results)
     results = await ddg_search.results(query, "video")
-    log_if_debug(f"serp results for query {query}: {results}")
+    log_if_debug(f"video results for query {query}: {results}")
     return results
 
 
@@ -139,6 +149,22 @@ def get_webpage_soup_text(
             f"`get_webpage_soup_text` => error getting webpage soup for {webpage_url}: {e}"
         )
         return ""
+
+
+async def get_webpage_text_using_scraping_service(webpage_url: str) -> str:
+    headers = {
+        os.getenv("SCRAPING_SERVICE_AUTH_HEADER_NAME"): os.getenv(
+            "SCRAPING_SERVICE_AUTH_HEADER_VALUE"
+        )
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            f"{os.getenv('SCRAPING_SERVICE_URL')}/scrape-single",
+            json={"url": webpage_url},
+            headers=headers,
+        ) as response:
+            response_data = await response.json()
+            return response_data["data"]
 
 
 async def get_webpage_soup_text_async(webpage_url: str, timeout: int = 4) -> str:
@@ -187,3 +213,21 @@ async def get_webpages_soups_text_async(
             content.append(text)
 
     return content
+
+
+async def get_webpages_text_using_scraping_service(
+    webpage_urls: List[str],
+) -> List[str]:
+    headers = {
+        os.getenv("SCRAPING_SERVICE_AUTH_HEADER_NAME"): os.getenv(
+            "SCRAPING_SERVICE_AUTH_HEADER_VALUE"
+        )
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            f"{os.getenv('SCRAPING_SERVICE_URL')}/scrape-multiple",
+            json={"urls": webpage_urls},
+            headers=headers,
+        ) as response:
+            response_data = await response.json()
+            return response_data["data"]

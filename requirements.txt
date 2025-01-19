@@ -1,4 +1,5 @@
 aiocache
+aiohttp
 arxiv
 asyncio
 beautifulsoup4
@@ -14,6 +15,7 @@ pypdf
 pytest
 python-dotenv
 redis
+requests
 selenium
 yollama>=2.1.0
 ypostgres_lib

@@ -21,7 +21,7 @@ def get_content_answers_to_query_prompt():
     """
     Get a prompt for answering a query with a context.
     """
-    context_answers_to_query_prompt_template = """You are a helpful assistant tasked with determining if a query can be fully answered using ONLY the provided context, without relying on any other external knowledge or your internal knowledge.
+    context_answers_to_query_prompt_template = """You are a helpful assistant tasked with determining if a query can be answered using ONLY the provided context, without relying on any other external knowledge or your internal knowledge.
 
 QUERY:
 {query}
@@ -32,8 +32,8 @@ CONTENT, delimited by dashes:
 ---
 
 Analyze if the query can be completely and accurately answered using ONLY the information present in the CONTENT section above.
-Respond with a JSON object containing a single key "fully_answered" with value either "yes" or "no".
-Example response format: {{"fully_answered": "yes"}} or {{"fully_answered": "no"}}"""
+Respond with a JSON object containing a single key "answered" with value either "yes" or "no".
+Example response format: {{"answered": "yes"}} or {{"answered": "no"}}"""
     return ChatPromptTemplate.from_template(context_answers_to_query_prompt_template)
 
 
@@ -120,7 +120,7 @@ IMPORTANT GUIDELINES:
 def get_qa_summary_prompt(json_output: bool = False):
     summary_prompt_template = """You are a desk clerk. Output ONLY:
 1. A markdown summary answering the query using EXCLUSIVELY the provided content, OR
-2. An empty string "" if content is empty/irrelevant or query can't be answered
+2. An empty string "" if all the content is empty/irrelevant or if the query can't be answered at all from content
 
 Query:
 {query}
@@ -132,13 +132,14 @@ Content:
 
 Rules:
 1. Use ONLY information from the content - no external knowledge
-2. Return "" if:
-   - Content is empty/meaningless
-   - Query can't be answered explicitly from content
-   - Answer would require unavailable information
-3. Never explain or add commentary
-4. Never acknowledge inability to answer
-5. Format response in markdown
+2. You are to discard meaningless parts and keep only the relevant information from the input content
+3. Return "" if:
+   - All the content is empty/meaningless
+   - Query can't be answered at all from content
+4. Never explain or add commentary
+5. Never acknowledge inability to answer
+6. It's okay to return a partial answer
+7. Format response in markdown
 
 Response must be either a clear markdown summary or ""."""
     if json_output:
